@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Table(name="event")
 @Data
@@ -18,5 +20,11 @@ public class Event {
 
     @Column(name = "title")
     private String title;
+
+    @Column(name = "date-time")
+    private Date data_time;
+
+    @Column(name = "location")
+    private String location;
 
 }

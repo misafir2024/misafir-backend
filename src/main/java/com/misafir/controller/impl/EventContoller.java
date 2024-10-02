@@ -1,7 +1,7 @@
 package com.misafir.controller.impl;
 
 import com.misafir.entities.Event;
-import com.misafir.repositories.EventRepository;
+import com.misafir.services.impl.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +14,10 @@ import java.util.List;
 public class EventContoller {
 
     @Autowired
-    EventRepository eventRepository;
+    EventService eventService;
 
     @GetMapping("/event-list")
     public List<Event> getAllHosts() {
-        return eventRepository.findAll();
+        return eventService.getEventList();
     }
 }
