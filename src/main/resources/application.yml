@@ -1,6 +1,8 @@
+server:
+  port: ${server-port}
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5332/misafir
+    url: ${db-connection-string}
     username: postgres
     password: postgres
   jpa:
