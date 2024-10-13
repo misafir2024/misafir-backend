@@ -27,18 +27,13 @@ public class AuthService {
     }
 
     public boolean authenticate(LoginDto loginDto) {
-        // Find user by email
         Optional<User> userOptional = userRepository.findByEmail(loginDto.getEmail());
-
         if (userOptional.isEmpty()) {
             return false;
         }
 
         User user = userOptional.get();
-
         // Check if the password matches
         return passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
     }
-
-
 }

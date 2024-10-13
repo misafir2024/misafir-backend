@@ -8,9 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -19,12 +18,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for development
+                .csrf(csrf -> csrf.disable()) // Disable CSRF protection
+                .cors(Customizer.withDefaults()) // Enable CORS
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/api/auth/**").permitAll()  // Allow all requests to /api/auth/**
-                        .anyRequest().authenticated()  // Require authentication for other requests
+                        .requestMatchers("/api/listings").permitAll() // Allow public access to the listings endpoint
+                        .requestMatchers("/api/auth/**").permitAll()  // Allow public access to auth endpoints
+                        .anyRequest().authenticated()  // All other endpoints require authentication
                 )
-                .formLogin(Customizer.withDefaults());  // Enable form-based login
+                .formLogin(Customizer.withDefaults());
 
         return http.build();
     }
@@ -32,21 +33,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    // Keep CORS configuration in SecurityConfig
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true)
-                        .maxAge(3600); // Preflight cache duration
-            }
-        };
     }
 }
