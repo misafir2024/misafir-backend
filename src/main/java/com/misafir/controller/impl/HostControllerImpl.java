@@ -12,21 +12,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/guest")
+@RequestMapping("/api/hosts")
 public class HostControllerImpl implements IHostController {
 
     @Autowired
     private IHostService hostService;
 
     @Override
-    @PostMapping("/create-host")
+    @PostMapping
     public ResponseEntity<DtoHost> createHost(@Valid @RequestBody DtoHost dtoHost) {
         DtoHost createdHost = hostService.saveHost(dtoHost);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdHost);
     }
 
     @Override
-    @GetMapping("/host-list")
+    @GetMapping
     public List<DtoHost> getAllHosts() {
         return hostService.getAllHosts();
     }

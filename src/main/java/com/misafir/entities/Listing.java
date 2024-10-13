@@ -1,13 +1,9 @@
 package com.misafir.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "listings")  // Specify the table name in the database
+@Table(name = "listings")  // Ensure this matches the actual table name in your database
 public class Listing {
 
     @Id
@@ -15,7 +11,11 @@ public class Listing {
     private Long id;
 
     private String eventType;
-    private String host;
+
+    @ManyToOne
+    @JoinColumn(name = "host_id", referencedColumnName = "id", nullable = false)
+    private Host host;
+
     private String imageUrl;
 
     // Getters and Setters
@@ -35,11 +35,11 @@ public class Listing {
         this.eventType = eventType;
     }
 
-    public String getHost() {
+    public Host getHost() {
         return host;
     }
 
-    public void setHost(String host) {
+    public void setHost(Host host) {
         this.host = host;
     }
 

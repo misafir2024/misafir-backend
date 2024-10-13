@@ -19,15 +19,23 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public List<DtoListing> getAllListings() {
-        List<Listing> listings = listingRepository.findAll();
+        List<Listing> listings = listingRepository.findAll()
+                .stream()
+                .filter(listing -> listing.getHost() != null)  // Filter out listings without a host
+                .collect(Collectors.toList());
 
         // Map each Listing entity to DtoListing
         return listings.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 
+
     private DtoListing convertToDto(Listing listing) {
         DtoListing dtoListing = new DtoListing();
-        BeanUtils.copyProperties(listing, dtoListing); // Copy properties from entity to DTO
+        dtoListing.setId(listing.getId());
+        dtoListing.setEventType(listing.getEventType());
+        dtoListing.setHostName(listing.getHost().getFirstName() + " " + listing.getHost().getLastName());
+        dtoListing.setImageUrl(listing.getImageUrl());
         return dtoListing;
     }
+
 }
