@@ -7,6 +7,7 @@ import com.misafir.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -23,17 +24,27 @@ public class AuthService {
         user.setUsername(dtoRegister.getUsername());
         user.setEmail(dtoRegister.getEmail());
         user.setPassword(passwordEncoder.encode(dtoRegister.getPassword()));
+
+        // Set host-related fields if provided
+        user.setEventType(dtoRegister.getEventType());
+        user.setMealType(dtoRegister.getMealType());
+        user.setPlace(dtoRegister.getPlace());
+        user.setLanguage(dtoRegister.getLanguage());
+        user.setAmenities(dtoRegister.getAmenities());
+
         userRepository.save(user);
     }
 
     public boolean authenticate(LoginDto loginDto) {
+        // Look for user by email or username
         Optional<User> userOptional = userRepository.findByEmail(loginDto.getEmail());
-        if (userOptional.isEmpty()) {
-            return false;
+
+        // If user exists, check the password
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
         }
 
-        User user = userOptional.get();
-        // Check if the password matches
-        return passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+        return false; // Return false if authentication fails
     }
 }

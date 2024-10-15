@@ -20,7 +20,6 @@ public class AuthController {
         return ResponseEntity.status(201).body("User registered successfully");
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginDto loginDto) {
         boolean isAuthenticated = authService.authenticate(loginDto);
