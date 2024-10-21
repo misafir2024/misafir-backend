@@ -1,0 +1,21 @@
+server:
+  port: ${server-port}
+spring:
+  datasource:
+    url: ${db-connection-string}
+    username: postgres
+    password: postgres
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        formal-sql: true
+    show-sql: true
+  main:
+    web-application-type: servlet
+  logging:
+    level:
+      org.springframework.web: DEBUG
