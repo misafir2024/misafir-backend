@@ -8,9 +8,7 @@ import com.misafir.repositories.UserRepository;
 import com.misafir.services.EventService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,13 +23,21 @@ public class EventServiceImpl implements EventService {
     private EventRepository eventRepository;
 
     @Autowired
-    private UserRepository userRepository;  // Inject UserRepository to fetch the authenticated user
+    private UserRepository userRepository;
 
     @Override
     public DtoEvent createEvent(DtoEvent dtoEvent) {
+        // Get the current authenticated user (host)
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User host = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Host user not found"));
+
         // Convert DtoEvent to Event entity
         Event event = new Event();
         BeanUtils.copyProperties(dtoEvent, event);
+
+        // Set the host of the event
+        event.setHost(host);
 
         // Convert String to LocalDate
         try {
@@ -40,33 +46,13 @@ public class EventServiceImpl implements EventService {
             throw new IllegalArgumentException("Invalid date format. Please use 'YYYY-MM-DD' format.");
         }
 
-        // Fetch the currently authenticated user (the host)
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = null;
-
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            email = userDetails.getUsername();  // Get the email (or username) of the authenticated user
-        }
-
-        if (email != null) {
-            // Fetch the User from the database using the email
-            User host = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-            // Set the host for the event
-            event.setHost(host);
-        } else {
-            throw new IllegalArgumentException("Cannot find authenticated user");
-        }
-
         // Save the Event entity
         Event savedEvent = eventRepository.save(event);
 
         // Convert saved Event back to DtoEvent
         DtoEvent dtoSavedEvent = new DtoEvent();
         BeanUtils.copyProperties(savedEvent, dtoSavedEvent);
-        dtoSavedEvent.setEventDate(savedEvent.getEventDate().toString());  // Convert LocalDate back to String
+        dtoSavedEvent.setEventDate(savedEvent.getEventDate().toString());
 
         return dtoSavedEvent;
     }
@@ -81,7 +67,7 @@ public class EventServiceImpl implements EventService {
     private DtoEvent convertToDto(Event event) {
         DtoEvent dtoEvent = new DtoEvent();
         BeanUtils.copyProperties(event, dtoEvent);
-        dtoEvent.setEventDate(event.getEventDate().toString());  // Convert LocalDate to String
+        dtoEvent.setEventDate(event.getEventDate().toString());
         return dtoEvent;
     }
 }
