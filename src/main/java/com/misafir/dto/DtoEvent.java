@@ -5,8 +5,10 @@ import lombok.Data;
 @Data
 public class DtoEvent {
     private Long id;
-    private String eventName;  // Corresponds to `title` in the entity
-    private String eventDescription;
-    private String eventLocation;
-    private String eventDate;  // Ensure this matches the entity type (String for date or LocalDate)
+    private String title;           // Matches `title` in the Event entity
+    private String description;     // Matches `description` in the Event entity
+    private String location;        // Matches `location` in the Event entity
+    private String eventDate;       // Ensure this is correctly converted in service layer
+    private int maxParticipants;
+    private double price;
 }
