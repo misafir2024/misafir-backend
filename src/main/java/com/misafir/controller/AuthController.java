@@ -33,20 +33,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody LoginDto loginDto) {
         try {
-            // This line authenticates the user using Spring Security's AuthenticationManager
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
             );
         } catch (Exception e) {
-            // Return 401 if authentication fails
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        // After successful authentication, load the user and generate JWT
         UserDetails userDetails = authService.loadUserByUsername(loginDto.getEmail());
         String token = jwtTokenUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(token);  // Return the JWT token
+        return ResponseEntity.ok(token);
     }
-
 }

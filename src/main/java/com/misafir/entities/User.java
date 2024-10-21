@@ -23,6 +23,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    // New fields for user's full name
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
+
     // Host-specific fields
     private String eventType;
     private String mealType;
@@ -40,4 +47,9 @@ public class User {
 
     @OneToMany(mappedBy = "participant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EventParticipation> eventParticipations;
+
+    // New method to return the full name of the user
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
+    }
 }

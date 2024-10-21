@@ -39,6 +39,11 @@ public class EventServiceImpl implements EventService {
         // Set the host of the event
         event.setHost(host);
 
+        // Set additional fields from dtoEvent to event
+        event.setEventType(dtoEvent.getEventType());
+        event.setMealType(dtoEvent.getMealType());
+        event.setAmenities(dtoEvent.getAmenities());
+
         // Convert String to LocalDate
         try {
             event.setEventDate(LocalDate.parse(dtoEvent.getEventDate()));
@@ -53,6 +58,7 @@ public class EventServiceImpl implements EventService {
         DtoEvent dtoSavedEvent = new DtoEvent();
         BeanUtils.copyProperties(savedEvent, dtoSavedEvent);
         dtoSavedEvent.setEventDate(savedEvent.getEventDate().toString());
+        dtoSavedEvent.setHostName(host.getFullName()); // Assuming the User entity has a `getFullName` method
 
         return dtoSavedEvent;
     }
@@ -68,6 +74,7 @@ public class EventServiceImpl implements EventService {
         DtoEvent dtoEvent = new DtoEvent();
         BeanUtils.copyProperties(event, dtoEvent);
         dtoEvent.setEventDate(event.getEventDate().toString());
+        dtoEvent.setHostName(event.getHost().getFullName()); // Assuming the User entity has a `getFullName` method
         return dtoEvent;
     }
 }

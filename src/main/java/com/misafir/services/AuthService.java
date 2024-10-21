@@ -33,6 +33,10 @@ public class AuthService {
         // Encrypt the password before saving
         user.setPassword(passwordEncoder.encode(dtoRegister.getPassword()));
 
+        // Set the user's full name
+        user.setFirstName(dtoRegister.getFirstName()); // New field
+        user.setLastName(dtoRegister.getLastName());   // New field
+
         // Set additional user details as required
         user.setEventType(dtoRegister.getEventType());
         user.setMealType(dtoRegister.getMealType());
