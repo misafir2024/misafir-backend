@@ -4,17 +4,27 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
+import java.util.Base64;
 
 @Component
 public class JwtTokenUtil {
 
-    private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // Use a secure, base64-encoded secret key from properties or environment variables
+    @Value("${jwt.secret}")
+    private String secretKeyBase64;
+
+    // Method to get SecretKey object from Base64 encoded string
+    private SecretKey getSecretKey() {
+        byte[] decodedKey = Base64.getDecoder().decode(secretKeyBase64);
+        return Keys.hmacShaKeyFor(decodedKey);
+    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -31,7 +41,7 @@ public class JwtTokenUtil {
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(getSecretKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -50,8 +60,8 @@ public class JwtTokenUtil {
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(secretKey)
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours expiry
+                .signWith(getSecretKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 }

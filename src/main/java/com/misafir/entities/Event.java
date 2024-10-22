@@ -30,21 +30,25 @@ public class Event {
     @Column(nullable = false)
     private double price;
 
-    // New fields to support the frontend form
+    // Fields for event type, meal type, etc.
     @Column
-    private String eventType;  // e.g., "Dinner", "Lunch", etc.
+    private String eventType;
 
     @Column
-    private String mealType;  // e.g., "Vegan", "BBQ", etc.
+    private String mealType;
 
     @ElementCollection
     @CollectionTable(name = "event_amenities", joinColumns = @JoinColumn(name = "event_id"))
     @Column(name = "amenity")
-    private List<String> amenities;  // List of amenities e.g., ["Wi-Fi", "Kitchen", etc.]
+    private List<String> amenities;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_id", nullable = false)
     private User host;
+
+    // New relationship with EventImage
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventImage> images;
 
     // Getters and setters...
 
@@ -134,5 +138,14 @@ public class Event {
 
     public void setHost(User host) {
         this.host = host;
+    }
+
+    // Getter and Setter for images
+    public List<EventImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<EventImage> images) {
+        this.images = images;
     }
 }

@@ -39,11 +39,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 jwt = authorizationHeader.substring(7);
-                if (jwt != null && jwt.contains(".")) {
-                    username = jwtTokenUtil.getUsernameFromToken(jwt);
-                } else {
-                    throw new MalformedJwtException("Invalid JWT format");
-                }
+                username = jwtTokenUtil.getUsernameFromToken(jwt);
             }
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -56,14 +52,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-        } catch (IllegalArgumentException e) {
-            logger.error("Unable to get JWT Token", e);
         } catch (ExpiredJwtException e) {
             logger.warn("JWT Token has expired", e);
         } catch (MalformedJwtException e) {
-            logger.error("JWT Token is malformed", e);
+            logger.error("Invalid JWT format", e);
         } catch (SignatureException e) {
             logger.error("JWT signature does not match locally computed signature", e);
+        } catch (Exception e) {
+            logger.error("Unable to get JWT Token", e);
         }
 
         chain.doFilter(request, response);
